@@ -6,31 +6,34 @@ export default function ExpenseForm({ setExpenses }) {
     category: '',
     amount: '',
   })
-  /*UseRef 
 
-- it is object propery current ->{current : undefiend}
-- if the data assocaited with useRef is changed it does not triggers rerender which similar of being a variable 
-- but when a render is trigggerd by a state varaible or something-else the data linked to useRef will
-the one which is last updated  , this is unlike a  variable 
-- useref is used to acess the dom nodes , also it helps in reducing render as shown in the code
-  */
+  const [errors, setErrors] = useState({})
 
-  // const titleRef = useRef()
-  // const categoryRef = useRef()
-  // const amountRef = useRef()
+  const validate = (formData) => {
+    const errorsData = {}
+
+    if (!formData.title) {
+      errorsData.title = 'Title is required'
+    }
+
+    if (!formData.category) {
+      errorsData.category = 'Please Select a Category'
+    }
+
+    if (!formData.amount) {
+      errorsData.amount = 'Amount is required'
+    }
+
+    setErrors(errorsData)
+    return errorsData
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    // setExpenses((prevState) => [
-    //   ...prevState,
-    //   {
-    //   title: titleRef.current.value,
-    //   category: categoryRef.current.value,
-    //   amount: amountRef.current.value,
-    //   id: crypto.randomUUID() 
-    // },
-    // ])
+    const validateResult = validate(expense)
+
+    if (Object.keys(validateResult).length) return
 
     setExpenses((prevState) => [
       ...prevState,
@@ -43,9 +46,14 @@ the one which is last updated  , this is unlike a  variable
     })
   }
 
-  useEffect(() => {
-    console.log('rendering')
-  })
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setExpense((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }))
+    setErrors({})
+  }
 
   return (
     <form className="expense-form" onSubmit={handleSubmit}>
@@ -55,14 +63,9 @@ the one which is last updated  , this is unlike a  variable
           id="title"
           name="title"
           value={expense.title}
-          onChange={(e) =>
-            setExpense((prevState) => ({
-              ...prevState,
-              title: e.target.value,
-            }))
-          }
-          // ref={titleRef}
+          onChange={handleChange}
         />
+        <p className='error'>{errors.title}</p>
       </div>
       <div className="input-container">
         <label htmlFor="category">Category</label>
@@ -70,13 +73,7 @@ the one which is last updated  , this is unlike a  variable
           id="category"
           name="category"
           value={expense.category}
-          onChange={(e) =>
-            setExpense((prevState) => ({
-              ...prevState,
-              category: e.target.value,
-            }))
-          }
-          // ref={categoryRef}
+          onChange={handleChange}
         >
           <option value="" hidden>
             Select Category
@@ -87,6 +84,7 @@ the one which is last updated  , this is unlike a  variable
           <option value="Education">Education</option>
           <option value="Medicine">Medicine</option>
         </select>
+        <p className='error'>{errors.category}</p>
       </div>
       <div className="input-container">
         <label htmlFor="amount">Amount</label>
@@ -94,14 +92,9 @@ the one which is last updated  , this is unlike a  variable
           id="amount"
           name="amount"
           value={expense.amount}
-          onChange={(e) =>
-            setExpense((prevState) => ({
-              ...prevState,
-              amount: e.target.value,
-            }))
-          }
-          // ref={amountRef}
+          onChange={handleChange}
         />
+        <p className='error'>{errors.amount}</p>
       </div>
       <button className="add-btn">Add</button>
     </form>

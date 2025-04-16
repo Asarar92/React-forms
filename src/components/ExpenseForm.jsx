@@ -1,20 +1,29 @@
-
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 export default function ExpenseForm({ setExpenses }) {
-
-  /*Unidirectional Data flow In React 
-  - UI cannot upadte data but data can update UI, so we  can only chnge data using state varaibles 
-  - React block the data upadte via UI if value attribute is aplliied , we need to use onChange() with it to upadte the data
-  */
   const [expense, setExpense] = useState({
     title: '',
     category: '',
     amount: '',
   })
 
+  // const titleRef = useRef()
+  // const categoryRef = useRef()
+  // const amountRef = useRef()
+
   const handleSubmit = (e) => {
     e.preventDefault()
+
+    // setExpenses((prevState) => [
+    //   ...prevState,
+    //   {
+    //   title: titleRef.current.value,
+    //   category: categoryRef.current.value,
+    //   amount: amountRef.current.value,
+    //   id: crypto.randomUUID() 
+    // },
+    // ])
+
     setExpenses((prevState) => [
       ...prevState,
       { ...expense, id: crypto.randomUUID() },
@@ -26,6 +35,10 @@ export default function ExpenseForm({ setExpenses }) {
     })
   }
 
+  useEffect(() => {
+    console.log('rendering')
+  })
+
   return (
     <form className="expense-form" onSubmit={handleSubmit}>
       <div className="input-container">
@@ -35,8 +48,12 @@ export default function ExpenseForm({ setExpenses }) {
           name="title"
           value={expense.title}
           onChange={(e) =>
-            setExpense((prevState) => ({ ...prevState, title: e.target.value }))
+            setExpense((prevState) => ({
+              ...prevState,
+              title: e.target.value,
+            }))
           }
+          // ref={titleRef}
         />
       </div>
       <div className="input-container">
@@ -51,6 +68,7 @@ export default function ExpenseForm({ setExpenses }) {
               category: e.target.value,
             }))
           }
+          // ref={categoryRef}
         >
           <option value="" hidden>
             Select Category
@@ -74,10 +92,10 @@ export default function ExpenseForm({ setExpenses }) {
               amount: e.target.value,
             }))
           }
+          // ref={amountRef}
         />
       </div>
       <button className="add-btn">Add</button>
     </form>
   )
 }
-  

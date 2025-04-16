@@ -6,6 +6,14 @@ export default function ExpenseForm({ setExpenses }) {
     category: '',
     amount: '',
   })
+  /*UseRef 
+
+- it is object propery current ->{current : undefiend}
+- if the data assocaited with useRef is changed it does not triggers rerender which similar of being a variable 
+- but when a render is trigggerd by a state varaible or something-else the data linked to useRef will
+the one which is last updated  , this is unlike a  variable 
+- useref is used to acess the dom nodes , also it helps in reducing render as shown in the code
+  */
 
   // const titleRef = useRef()
   // const categoryRef = useRef()

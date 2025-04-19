@@ -2,22 +2,31 @@ import React, { useEffect, useRef, useState } from 'react'
 import Input from './Input'
 import Select from './Select'
 
-export default function ExpenseForm({ setExpenses }) {
-  const [expense, setExpense] = useState({
-    title: '',
-    category: '',
-    amount: '',
-  })
-
+export default function ExpenseForm({
+  expense,
+  setExpense,
+  setExpenses,
+  editingRowId,
+  setEditingRowId,
+}) {
   const [errors, setErrors] = useState({})
 
   const validationConfig = {
     title: [
       { required: true, message: 'Please enter title' },
-      { minLength: 5, message: 'Title should be at least 5 characters long' },
+      { minLength: 2, message: 'Title should be at least 2 characters long' },
     ],
     category: [{ required: true, message: 'Please select a category' }],
-    amount: [{ required: true, message: 'Please enter an amount' }],
+    amount: [
+      {
+        required: true,
+        message: 'Please enter an amount',
+      },
+      {
+        pattern: /^[1-9]\d*(\.\d+)?$/,
+        message: 'Please enter a valid number',
+      },
+    ],
   }
 
   const validate = (formData) => {
@@ -30,12 +39,15 @@ export default function ExpenseForm({ setExpenses }) {
           return true
         }
 
-        if (rule.minLength && value.length < 5) {
+        if (rule.minLength && value.length < rule.minLength) {
           errorsData[key] = rule.message
           return true
         }
 
-        
+        if (rule.pattern && !rule.pattern.test(value)) {
+          errorsData[key] = rule.message
+          return true
+        }
       })
     })
 
@@ -49,6 +61,24 @@ export default function ExpenseForm({ setExpenses }) {
     const validateResult = validate(expense)
 
     if (Object.keys(validateResult).length) return
+
+    if (editingRowId) {
+      setExpenses((prevState) =>
+        prevState.map((prevExpense) => {
+          if (prevExpense.id === editingRowId) {
+            return { ...expense, id: editingRowId }
+          }
+          return prevExpense
+        })
+      )
+      setExpense({
+        title: '',
+        category: '',
+        amount: '',
+      })
+      setEditingRowId('')
+      return
+    }
 
     setExpenses((prevState) => [
       ...prevState,
@@ -98,7 +128,7 @@ export default function ExpenseForm({ setExpenses }) {
         onChange={handleChange}
         error={errors.amount}
       />
-      <button className="add-btn">Add</button>
+      <button className="add-btn">{editingRowId ? 'Save' : 'Add'}</button>
     </form>
   )
 }
